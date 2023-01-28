@@ -1,0 +1,1 @@
+The code is in week02.ipynb. Be sure to have all the packages installed and have problem2.csv under the same directory as week02.ipynb.
