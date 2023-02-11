@@ -1,0 +1,1 @@
+The code is in week03.ipynb. Be sure to have all the packages installed and have DailyReturn.csv under the same directory as week03.ipynb.
