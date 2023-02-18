@@ -1,0 +1,1 @@
+The code is in week04.ipynb. Be sure to have all the packages installed and have DailyPrices.csv and portfolio.csv under the same directory as week04.ipynb.
