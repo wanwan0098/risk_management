@@ -1,0 +1,1 @@
+The code is in week05.ipynb, which imports library.py. Be sure to have all the packages installed and have library.py, problem1.csv, portfolio.csv, and DailyPrices.csv under the same directory as week05.ipynb.

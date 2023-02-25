@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.DS_Store
+.Rhistory
+*.Rhistory
+/.Rhistory
 week02/.DS_Store
 # C extensions
 *.so
