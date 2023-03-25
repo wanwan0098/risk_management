@@ -1,0 +1,1 @@
+The code is in week07.ipynb, which imports library.py. Be sure to have all the packages installed and have library.py and relevant files under the same directory as week07.ipynb.

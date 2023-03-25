@@ -277,19 +277,51 @@ def historical_VAR(portfolio, prices, nsim=2000, lambd=0.94, alpha=0.05):
 
 
 # 5. ES
-def es(returns, alpha=0.05):
-    returns.sort()
+def es(returns, alpha=0.05, df=True):
+    if df==True:
+        returns.sort_values(inplace=True)
+    else: returns.sort()
     index = round(alpha*len(returns))
     return -np.mean(returns[:index+1])
 
 
 # 6. portfolio related
 def return_calculate(prices, method='DISCRETE'):
-    price = prices.pct_change().dropna()
+    price = (prices.shift(-1) / prices).dropna()
     if method.upper() == "DISCRETE":
-        return price
+        return price-1
     elif method.upper() == "LOG":
         return np.log(price)
+
+def return_calculate_adv(prices, method="DISCRETE", dateColumn="Date"):
+    vars_ = prices.columns
+    nVars = len(vars_)
+    vars_ = [var for var in vars_ if var != dateColumn]
+    if nVars == len(vars_):
+        raise ValueError(f"dateColumn: {dateColumn} not in DataFrame: {vars_}")
+    nVars = nVars - 1
+
+    p = prices[vars_].to_numpy()
+    n, m = p.shape
+    p2 = np.empty((n-1, m))
+
+    for i in range(n-1):
+        for j in range(m):
+            p2[i, j] = p[i+1, j] / p[i, j]
+
+    if method.upper() == "DISCRETE":
+        p2 = p2 - 1.0
+    elif method.upper() == "LOG":
+        p2 = np.log(p2)
+    else:
+        raise ValueError(f"method: {method} must be in (\"LOG\",\"DISCRETE\")")
+
+    dates = prices[dateColumn].iloc[1:n].to_numpy()
+    out = pd.DataFrame({dateColumn: dates})
+    for i in range(nVars):
+        out[vars_[i]] = p2[:, i]
+
+    return out
 
 def calc_portfolio_value(portfolio, prices):
     dict_current_prices = prices.iloc[-1,:].to_dict()
@@ -298,3 +330,15 @@ def calc_portfolio_value(portfolio, prices):
     holdings = portfolio['Holding'].values
     portfolio_value = np.dot(holdings, current_prices)
     return current_prices, holdings, portfolio_value
+
+
+# 7. option related
+def black_scholes(S, b, r, T, X, sigma, option):
+    d1 = (np.log(S/X)+(b+sigma**2/2)*T)/sigma/T**0.5
+    d2 = d1 - sigma*T**0.5
+    if option=='call':
+        return S*np.exp((b-r)*T)*stats.norm.cdf(d1)-X*np.exp(-r*T)*stats.norm.cdf(d2)
+    elif option=='put':
+        return X*np.exp(-r*T)*stats.norm.cdf(-d2)-S*np.exp((b-r)*T)*stats.norm.cdf(-d1)
+    else:
+        return None
